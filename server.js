@@ -1,8 +1,11 @@
 var express = require('express');
 var app = express();
-var io = require('socket.io').listen(app);
+var http = require('http');
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+var util = require('util');
 
-app.listen(8080);
+server.listen(8080);
 
 // Socket rooms - 2 Players per room
 var rooms = ['room1','room2','room3'];
@@ -33,7 +36,7 @@ io.sockets.on('connection', function (socket) {
     socket.join('room1');
     
     // Echo to the client that they've connected
-    socket.emit('updatechat', 'SERVER', 'You have connected to room 1');
+    socket.emit('updatechat', 'SERVER', 'You have connected to ' + socket.room);
     
     // Echo to room1 that a person has connected to their room
     socket.broadcast.to('room1').emit('updatechat', 'SERVER', username + ' has connected to this room');
